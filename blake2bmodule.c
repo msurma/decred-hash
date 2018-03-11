@@ -1,6 +1,5 @@
 #include <Python.h>
 
-#include "blake.h"
 
 static PyObject *blake_getpowhash(PyObject *self, PyObject *args)
 {
@@ -14,18 +13,19 @@ static PyObject *blake_getpowhash(PyObject *self, PyObject *args)
     if (!PyArg_ParseTuple(args, "S", &input))
         return NULL;
     Py_INCREF(input);
-    output = PyMem_Malloc(32);
+    output = PyMem_Malloc(64);
 
 #if PY_MAJOR_VERSION >= 3
     blake_hash((char *)PyBytes_AsString((PyObject*) input), output);
+
 #else
     blake_hash((char *)PyString_AsString((PyObject*) input), output);
 #endif
     Py_DECREF(input);
 #if PY_MAJOR_VERSION >= 3
-    value = Py_BuildValue("y#", output, 32);
+    value = Py_BuildValue("y#", output, 64);
 #else
-    value = Py_BuildValue("s#", output, 32);
+    value = Py_BuildValue("s#", output, 64);
 #endif
     PyMem_Free(output);
     return value;
